@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import PropertyForm from './components/PropertyForm'
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import ProductForm from './components/ProductForm';
 
 
 import './App.css'
@@ -9,7 +10,11 @@ function App() {
 
   return (
     <>
-        <PropertyForm></PropertyForm>
+    <Routes>
+      <Route>
+
+      </Route>
+      </Routes>
     </>
   )
 }
