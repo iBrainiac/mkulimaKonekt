@@ -1,19 +1,45 @@
-import React, { useState } from 'react';
-import { contract, web3 } from '../utils/web3utils';
+import React, { useState } from "react";
+import { contract, web3 } from "../utils/web3utils";
 
-function productForm() {
-  const [productName, setproductName] = useState('');
+function ProductForm() {
+  const [productName, setproductName] = useState("");
   const [productPrice, setproductPrice] = useState(0);
-  const [productLocation, setproductLocation] = useState('');
+  const [productLocation, setproductLocation] = useState("");
   const [productImage, setproductImage] = useState(null);
 
-  const handleSubmit = async (event) => { 
-
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const accounts =  await ethereum.request({ method: "eth_requestAccounts" });
+    const accounts = await ethereum.request({ method: "eth_requestAccounts" });
     const account = accounts[0];
-    console.log(account);// 
-    await contract.methods.addProduct(productName, productPrice, "image1", productLocation).send({from: account, gasLimit: "1000000"}).then((data) => console.log(data))
+    console.log(account);
+    console.log(productImage);
+    let formData = new FormData();
+    formData.append("files", productImage);
+    const options = {
+      method: "POST",
+      body: formData,
+    };
+    fetch("http://localhost:3000/upload", options)
+      .then((response) => response.text())
+      .then((data) => {
+        console.log(data);
+        contract.methods
+          .addProduct(
+            productName,
+            web3.utils.toWei(productPrice, "ether"),
+            data,
+            productLocation
+          )
+          .send({ from: account, gasLimit: "1000000" })
+          .then((data) => {
+            console.log(data);
+            console.log("product added successfuly");
+          })
+          .catch((e) => {
+            const message = e.message;
+            alert("some error occured, please try again");
+          });
+      });
   };
 
   const handleNameChange = (event) => {
@@ -33,7 +59,7 @@ function productForm() {
   };
 
   return (
-    <form className="w3-padding w3-auto">
+    <form className="w3-padding w3-card w3-auto" style={{ width: "40rem" }}>
       <h3>Add Product</h3>
       <label htmlFor="product-name">product Name</label>
       <input
@@ -54,7 +80,8 @@ function productForm() {
         className="w3-input w3-border w3-round"
         value={productPrice}
         onChange={handlePriceChange}
-        required      />
+        required
+      />
 
       <label htmlFor="product-location">product Location</label>
       <input
@@ -79,8 +106,10 @@ function productForm() {
       />
       <br />
 
-      <button className="w3-button w3-blue" onClick={handleSubmit}>Submit product</button>
+      <button className="w3-button w3-blue" onClick={handleSubmit}>
+        Submit product
+      </button>
     </form>
   );
 }
-export default productForm;
+export default ProductForm;
