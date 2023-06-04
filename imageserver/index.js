@@ -4,7 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const fileUplaod = require("express-fileupload");
 const app = express();
-const port = 3000;
+const port = 3001;
 app.use(fileUplaod());
 app.use("/images", express.static(__dirname + "/images"));
 
